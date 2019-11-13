@@ -1,0 +1,90 @@
+import { useState, useEffect } from 'react';
+import { loadModules } from 'esri-loader';
+import { useGlobal } from 'reactn';
+
+const GagePoint = (props) => {
+
+    const [graphic, setGraphic] = useState(null);
+    const [ global, setGlobal ] = useGlobal();
+
+    useEffect(() => {
+        loadModules(['esri/Graphic']).then(([Graphic]) => {
+            // Create a point geometry
+            var point = {
+                type: "point",
+                longitude: props.gageInfo.long,
+                latitude: props.gageInfo.lat
+              };
+
+            // create symbol for point  
+            var simpleMarkerSymbol = {
+                type: "simple-marker",
+                color: [58, 193, 240],  // orange
+                outline: {
+                    color: [255, 255, 255], // white
+                    width: 3
+                }
+            };
+            
+            // set attributes for gage point
+            var gageAttr = {
+                name: props.gageInfo.name,
+                id: props.gageInfo.id,
+                location: {longitude: props.gageInfo.long,
+                    latitude: props.gageInfo.lat}
+            };
+            
+            // create graphics for point
+            var pointGraphic = new Graphic({
+                geometry: point,
+                symbol: simpleMarkerSymbol,
+                attributes: gageAttr,
+                popupTemplate: {
+                    title: "{name}",
+                //     content: [
+                //     ]
+                } 
+            });            
+            // set the graphic and add to view
+            setGraphic(pointGraphic);
+            props.view.graphics.add(pointGraphic);
+
+            // add click listener to view and then hit test to see if point clicked
+            props.view.on("click", function(evt) {
+                var screenPoint = evt.screenPoint;        
+                // esri hitTest() methodchecks to see if any graphics in the view
+                // intersect the given screen point
+                props.view.hitTest(screenPoint)
+                  .then(getGraphics);
+            });
+
+            // if gage clicked, set global state for currentGage to selected gage
+            // then update flow data (to update the dashboard display)
+            function getGraphics(response) {
+                // the topmost graphic from the click location
+                // and display select attribute values from the
+                // graphic to the user
+                var graphic = response.results[0].graphic;
+                var attributes = graphic.attributes;
+                setGlobal({
+                    currentGage: {
+                        id: attributes.id,
+                        name: attributes.name}
+                  }).then(
+                    props.updateFlowData()
+                  )
+              }
+
+
+        }).catch((err) => console.error(err));
+
+        return function cleanup() {
+            props.view.graphics.remove(graphic);
+        };
+    }, []);
+
+    return null;
+
+}
+
+export default GagePoint;

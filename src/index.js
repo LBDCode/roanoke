@@ -1,8 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { setDefaultOptions } from 'esri-loader';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { setGlobal } from 'reactn';
+
+
+// set defaults for global state
+setGlobal({
+  currentGage: {id: null, name: null},
+  currentGageFlow: null,
+  currentGageStage: null
+});
+
+setDefaultOptions({ css: true });
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
