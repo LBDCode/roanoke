@@ -7,11 +7,10 @@ import * as serviceWorker from './serviceWorker';
 import { setGlobal } from 'reactn';
 
 
-// set defaults for global state
+// set defaults for global state items
 setGlobal({
-  currentGage: {id: null, name: null},
-  currentGageFlow: null,
-  currentGageStage: null
+  currentGageID: null, 
+  currentGageName: null,
 });
 
 setDefaultOptions({ css: true });

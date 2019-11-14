@@ -4,8 +4,13 @@ import { useGlobal } from 'reactn';
 
 const GagePoint = (props) => {
 
+    // hooks for local state for graphic for gage point
     const [graphic, setGraphic] = useState(null);
-    const [ global, setGlobal ] = useGlobal();
+    
+    // hooks for global currentGageID and currentGageName state
+    const [ currentGageID, setGageID ] = useGlobal('currentGageID');
+    const [ currentGageName, setGageName ] = useGlobal('currentGageName');
+
 
     useEffect(() => {
         loadModules(['esri/Graphic']).then(([Graphic]) => {
@@ -66,13 +71,9 @@ const GagePoint = (props) => {
                 // graphic to the user
                 var graphic = response.results[0].graphic;
                 var attributes = graphic.attributes;
-                setGlobal({
-                    currentGage: {
-                        id: attributes.id,
-                        name: attributes.name}
-                  }).then(
-                    props.updateFlowData()
-                  )
+                // set the global gageID and gageName state to attributes of selected gage
+                setGageID(attributes.id);
+                setGageName(attributes.name);
               }
 
 

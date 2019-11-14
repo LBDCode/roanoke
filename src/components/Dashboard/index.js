@@ -11,7 +11,10 @@ import Col from 'react-bootstrap/Col';
 const Dashboard = (props) => {
 
   // hooks for global gage state and local flow data state
-  const [ currentGage, setGage ] = useGlobal('currentGage');
+  const [ currentGageID, setGageID ] = useGlobal('currentGageID');
+  const [ currentGageName, setGageName] = useGlobal('currentGageName');
+
+  // hooks for local flow and stage data for selected gage
   const [flowData, setFlowData] = useState(null);
   const [stageData, setStageData] = useState(null);
 
@@ -24,9 +27,10 @@ const Dashboard = (props) => {
 
   // update info displayed in dashboard when currentGage
   useEffect(() => {
-    if (props.currentGage.id) {
+    if (currentGageID) {
       // clean and set flow data for selected gage, if available
-      API.getGagesHistory(props.currentGage.id, "flow").then(response => {
+      console.log(currentGageID);
+      API.getGagesHistory(currentGageID, "flow").then(response => {
         if (response.data.value.timeSeries[0]) {
           // let val = response.data.value.timeSeries[0].values[0].value[0].value;
           setFlowData(cleanGageData(response));
@@ -35,7 +39,7 @@ const Dashboard = (props) => {
         }
       });
       // clean and set stage data for selected gage, if available
-      API.getGagesHistory(props.currentGage.id, "stage").then(response => {
+      API.getGagesHistory(currentGageID, "stage").then(response => {
         if (response.data.value.timeSeries[0]) {
           // let val = response.data.value.timeSeries[0].values[0].value[0].value;
           setStageData(cleanGageData(response));
@@ -46,15 +50,15 @@ const Dashboard = (props) => {
 
     }
 
-  },[props.currentGage.id]);
+  },[currentGageID]);
 
   return (
     <>
     {/* if a gage is selected (props passed w/ current gage name), return dashboard container.  Else return empty fragment. */}
-    {props.currentGage.name ? 
+    {currentGageName ? 
         <Container className="dashboardWrapper"> 
-          <h5 id="dashboardTitle">{props.currentGage.name}</h5>
-          <p>gage #{props.currentGage.id}</p>
+          <h5 id="dashboardTitle">{currentGageName}</h5>
+          <p>gage #{currentGageID}</p>
           
           <Row>
             <Col >

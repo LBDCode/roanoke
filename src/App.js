@@ -19,10 +19,6 @@ const App = () => {
     // get dummy gage info(name, id, lat and long)
     const gageInfo = gageData.gageData();
 
-    // hook for global gage state
-    const [ currentGage, setGage ] = useGlobal('currentGage');
-
-
     return (
       <div>
         {/* create as sceneview w/ full page map TODO: move styling to index.css */}
@@ -45,7 +41,6 @@ const App = () => {
         </Scene>
         {/* render dashboard component, pass selected gage info through*/}
         <Dashboard
-          currentGage={currentGage}
         >
         </Dashboard>
 
